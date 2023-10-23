@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="guidb@mongoreplicac156286312ed0.mongodb.volces.com" uuid="96ffe5b0-4687-4eda-83c7-76e05ba85b1d">
+      <driver-ref>mongo</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
+      <jdbc-url>mongodb://mongoreplicac156286312ed0.mongodb.volces.com:3717/guidb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="guidb@mongoreplicac156286312ed1.mongodb.volces.com" uuid="fdcb2908-7b39-4d6f-bcd7-174d0f915139">
+      <driver-ref>mongo</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
+      <jdbc-url>mongodb://mongoreplicac156286312ed1.mongodb.volces.com:3717/guidb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="@123.57.232.135" uuid="841d322f-04b6-457a-9788-d18f7ccd2df7">
+      <driver-ref>mongo</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
+      <jdbc-url>mongodb://123.57.232.135:27017</jdbc-url>
+    </data-source>
+  </component>
+</project>
