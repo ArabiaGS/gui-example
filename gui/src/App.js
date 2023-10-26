@@ -53,7 +53,6 @@ const App = () => {
                 <Route path="/" element={(<Main />)} />
                 <Route path="/main" element={(<Main />)} />
                 {/*with :simId */}
-                <Route path="/list" element={(<List />)} />
 
 
                 {/* pages  */}
@@ -61,7 +60,6 @@ const App = () => {
                 <Route path="/fleet-info" element={<FleetInfo />} />
                 <Route path="/site" element={<Site />} />
                 <Route path="/results" element={<Results />} />
-                <Route path="/upload" element={<Upload />} />
 
                 {/* apps  */}
 
