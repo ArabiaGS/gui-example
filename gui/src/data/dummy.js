@@ -487,17 +487,9 @@ export const links = [
     ],
   },*/
 //aqui donde se pone los links de la sidebar
+
   {
-    title: 'List',
-    links: [
-      {
-        name: 'list',
-        icon: <BsViewList />,
-      },
-    ],
-  },
-  {
-    title: 'Main',
+    title: 'Select',
     links: [
       {
         name: 'main',
@@ -505,15 +497,7 @@ export const links = [
       },
     ],
   },
-  {
-    title: 'File',
-    links: [
-      {
-        name: 'Upload',
-        icon: <BsUpload />,
-      },
-    ],
-  },
+
   {
     title: 'Fleet Information',
     links: [
