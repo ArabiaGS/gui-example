@@ -214,7 +214,7 @@ const FleetInfo = () => {
       </div>
       <div className="flex flex-wrap justify-center ">
 
-        <div className="md:w-800 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
+        <div className="md:w-400 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
           <div className="flex justify-between">
             <p className="text-xl font-semibold">Vehicle charging profile required power (MW) (total of all vehicles)</p>
           </div>
@@ -223,11 +223,7 @@ const FleetInfo = () => {
         </div>
 
         </div>
-        
-    </div>
-    <div className="flex flex-wrap justify-center ">
-
-        <div className="md:w-800 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
+        <div className="md:w-400 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
           <div className="flex justify-between">
             <p className="text-xl font-semibold">Vehicle distance (km) (individual vehicles)</p>
           </div>
@@ -238,6 +234,7 @@ const FleetInfo = () => {
         </div>
         
     </div>
+
     </div>
   )
 }
