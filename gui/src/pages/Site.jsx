@@ -14,6 +14,7 @@ import { DataContext } from '../contexts/DataContext';
 import { useContext } from 'react';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { useSelectedItems } from '../contexts/selectedItemsContext';
 
 const Site = () => {
   const { currentColor, currentMode } = useStateContext();
@@ -21,32 +22,75 @@ const Site = () => {
   const [datadb, setDatadb] = useState([]);
   //const {simId} = useParams();
   const {data} = useContext(DataContext);
+
+  //multi
+  const {selectedItems } = useSelectedItems();
+  console.log(' This are the items previously selected '+selectedItems);
+  //end multiselection
+  //
+
   useEffect(() => {
     fetchData();
     
   }, []);
   const fetchData = async () => {
     try {
-      const response = await axios.get(`/api/${data}`);
-      console.log('This is the response fromm axios:', response);
-
-      console.log('This is the response data fromm axios:', response.data);
-      setDatadb(response.data);
-      
+      const itemIds = selectedItems; // Assuming data is an array of item IDs
+      const itemDataPromises = itemIds.map(async (id) => {
+        const response = await axios.get(`/api/${id}`);
+        return response.data;
+      });
+  
+      const itemData = await Promise.all(itemDataPromises);
+  
+      // itemData is now an array of information associated with each ID
+      console.log('Item Data:', itemData);
+      setDatadb(itemData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
   console.log(datadb);
-  const n_ch = datadb[0] ? datadb[0].N_CH : [];
-  const tariff = datadb[0] ? datadb[0].Tariff : [];
-  const site_load = datadb[0] ? datadb[0].P_Site : [];
-  const p_pv= datadb[0] ? datadb[0].P_PV : [];
-  const p_ess= datadb[0] ? datadb[0].P_ESS : [];
-  //new
+  const n_ch = datadb.flatMap(innerarray => innerarray.map(item => item.N_CH));
+  const tariff = datadb.flatMap(innerarray => innerarray.map(item => item.Tariff));
+  const site_load = datadb.flatMap(innerarray => innerarray.map(item => item.P_Site));
+  const p_pv = datadb.flatMap(innerarray => innerarray.map(item => item.P_PV));
+  const p_ess = datadb.flatMap(innerarray => innerarray.map(item => item.P_ESS));
 
+  const bordercolourbar =['#03C9D7', '#005563', '#A43D00','#FF8B42', '#B6ADF8', '#AB2B64'];
+  //new
+  const displaydata = selectedItems.map((selected,index) => ({
+    selected,
+    chargers:n_ch[index],
+    color: bordercolourbar[index],
+
+
+  }));
+  const thStyle ={
+    padding: '12px',
+    textAlign: 'center',
+    borderBottom:'1px solid #ddd',
+  };
+  const tdStyle ={
+    padding: '10px',
+    borderBottom:'1px solid #ddd',
+  };
 
   //Tariff
+  var datasetValue_tariff= [];
+
+  for (var j = 0; j < tariff.length; j++) {    
+    datasetValue_tariff[j] = 
+        {
+        //fillColor: 'rgba(220,220,220,0.5)',
+        //strokeColor :'rgba(220,220,220,1)',
+        borderColor: bordercolourbar[j],
+        data : tariff[j],
+        tension: 0.1,
+        borderWidth: 3,
+        pointRadius:0,
+        } 
+    }
   const customLabels = Array.from({ length: 240 }, (_, index) => {
     const hour = Math.floor(index / 10); // Assuming 10 data points per hour
     const minute = (index % 10) * 6; // 6 minutes interval
@@ -57,17 +101,7 @@ const Site = () => {
 
   const chartData_tariff = {
     labels: customLabels,
-    datasets: [
-      {
-        label: 'Tariff Data',
-        data: tariff,
-        borderColor: '#03C9D7',
-        fill:false,
-        tension: 0.1,
-        borderWidth: 3,
-        pointRadius:0,
-      },
-    ],
+    datasets: datasetValue_tariff
   };
 
   const chartOptions_tariff = {
@@ -125,19 +159,23 @@ const Site = () => {
 
 
   //p_site line
+  var datasetValue_p_site= [];
+
+  for (var j = 0; j < site_load.length; j++) {    
+    datasetValue_p_site[j] = 
+        {
+        //fillColor: 'rgba(220,220,220,0.5)',
+        //strokeColor :'rgba(220,220,220,1)',
+        borderColor: bordercolourbar[j],
+        data : site_load[j],
+        tension: 0.1,
+        borderWidth: 3,
+        pointRadius:0,
+        } 
+    }
   const chartData_site = {
     labels: customLabels,
-    datasets: [
-        {
-            label:'',
-            data: site_load,
-            borderColor: '#03C9D7',
-            fill:false,
-            tension: 0.1,
-            borderWidth: 3,
-            pointRadius:0,
-        },
-    ],
+    datasets: datasetValue_p_site
   };
   const chartOptions_site = {
     scales: {
@@ -191,19 +229,23 @@ const Site = () => {
   };
   //
   //P_PV line
+  var datasetValue_p_pv= [];
+
+  for (var j = 0; j < p_pv.length; j++) {    
+    datasetValue_p_pv[j] = 
+        {
+        //fillColor: 'rgba(220,220,220,0.5)',
+        //strokeColor :'rgba(220,220,220,1)',
+        borderColor: bordercolourbar[j],
+        data : p_pv[j],
+        tension: 0.1,
+        borderWidth: 3,
+        pointRadius:0,
+        } 
+    }
   const chartData_PV = {
     labels:customLabels,
-    datasets: [
-        {
-            label:'PV',
-            data: p_pv,
-            borderColor: '#03C9D7',
-            fill:false,
-            tension: 0.1,
-            borderWidth: 3,
-            pointRadius:0,
-        },
-    ],
+    datasets: datasetValue_p_pv
   };
   const chartOptions_PV = {
     scales: {
@@ -257,19 +299,23 @@ const Site = () => {
   };
   //
   //P_ESS line
+  var datasetValue_p_ess= [];
+
+  for (var j = 0; j < p_ess.length; j++) {    
+    datasetValue_p_ess[j] = 
+        {
+        //fillColor: 'rgba(220,220,220,0.5)',
+        //strokeColor :'rgba(220,220,220,1)',
+        borderColor: bordercolourbar[j],
+        data : p_ess[j],
+        tension: 0.1,
+        borderWidth: 3,
+        pointRadius:0,
+        } 
+    }
   const chartData_ESS = {
     labels:customLabels,
-    datasets: [
-        {
-            label:'ESS',
-            data: p_ess,
-            borderColor: '#03C9D7',
-            fill:false,
-            tension: 0.1,
-            borderWidth: 3,
-            pointRadius:0,
-        },
-    ],
+    datasets: datasetValue_p_ess
   };
   const chartOptions_ESS = {
     scales: {
@@ -328,61 +374,75 @@ const Site = () => {
       <div className='flex flex-wrap justify-center'>
         <h1 className='font-bold text-3xl '>Site Information</h1>
       </div>
-      <div className="flex flex-wrap justify-center ">
-        <div className=" mt-10 w-800 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
-          <div className='flex justify-between'>
-            <p className="text-xl font-semibold">Number of charging stations: {n_ch}</p>
-          </div>       
-          <div className="mt-1 ">
-            <div className='text-s text-gray-500'>
-            </div>
-          </div>
+      <div className='justify-center flex flex-wrap mt-10'>
+        <div className="bg-white bg-center dark:text-gray-200 dark:bg-secondary-dark-bg p-6 m-3 rounded-2xl  w-900 items-center flex-center align-center justify-center">
+          <table style={{ marging: 'auto', borderCollapse:'collapse'}}>
+            <thead>
+              <tr className="text-l cursor-pointer hover:drop-shadow-xl font-semibold rounded-lg w-1/4 bg-blue-200 py-0.5 px-2 text-gray-800 mt-10 ">
+              <th style={thStyle}> </th>
+
+                <th style={thStyle}>Sim ID</th>
+                <th style={thStyle}>Number of charging stations </th>
+              </tr>
+            </thead>
+            <tbody className='justify-centerNow'>
+              {displaydata.map((row, index) => (
+                <tr key={index} style={{textAlign: 'center', borderBottom: '1px solid #ddd'}}>
+                  <td style={tdStyle}><div style={{
+                    width:'20px',
+                    height: '20px',
+                    backgroundColor: row.color,
+                  }}>
+                    </div></td>
+                  <td style={tdStyle}>{row.selected}</td>
+                  <td style={tdStyle}>{row.chargers}</td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center ">
-        <div className="md:w-400 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
-          <div className="flex justify-between">
+
+      <div className=" flex justify-center ">
+        <div className="md:w-1/2 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
+          <div className="flex justify-center">
             <p className="text-xl font-semibold">Tariff profile (p/kWh)</p>
           </div>
-          <div className="mt-10 ">
-            <div className="mt-4">
+          <div className="mt-10  justify-center flex flex-wrap ">
               <Line data={chartData_tariff} options={chartOptions_tariff}/>
-            </div>
           </div>
         </div>
-        <div className="md:w-400 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
-          <div className="flex justify-between">
+        <div className="md:w-1/2 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
+          <div className="flex justify-center">
             <p className="text-xl font-semibold">Site load profile (kW)</p>
           </div>
-          <div className="mt-10 ">
-            <div className="mt-4">
+          <div className="mt-10  justify-center flex flex-wrap">
               <Line data={chartData_site} options={chartOptions_site} background={currentMode === 'Dark' ? '#33373E' : '#fff'}/>
-            </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center">
-        <div className="md:w-400 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
-          <div className="flex justify-between">
+
+      <div className=" flex justify-center ">
+        <div className="md:w-1/2 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
+          <div className="flex justify-center">
             <p className="text-xl font-semibold">PV generation profile (kW)</p>
           </div>
-          <div className="mt-10 ">
-            <div className="mt-4">
-              <Line data={chartData_PV} options={chartOptions_PV} background={currentMode === 'Dark' ? '#33373E' : '#fff'}/>
-            </div>
+          <div className="mt-10  justify-center flex flex-wrap ">
+            <Line data={chartData_PV} options={chartOptions_PV} background={currentMode === 'Dark' ? '#33373E' : '#fff'}/>
           </div>
         </div>
-        <div className="w-400 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
-          <div className="flex justify-between">
+        <div className="md:w-1/2 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-2xl p-6 m-3">
+          <div className="flex justify-center">
             <p className="text-xl font-semibold">ESS power (kW)</p>
           </div>
-          <div className="mt-10 ">
-            <div className='mt-4'>
-              <Line data={chartData_ESS} options={chartOptions_ESS} background={currentMode === 'Dark' ? '#33373E' : '#fff'}/>
-            </div>
-          </div>  
+          <div className="mt-10  justify-center flex flex-wrap">
+            <Line data={chartData_ESS} options={chartOptions_ESS} background={currentMode === 'Dark' ? '#33373E' : '#fff'}/>
+            
+          </div>
         </div>
-    </div>
+      </div>
+     
   </div>
   )
 }

@@ -4,6 +4,7 @@ import { Card } from '../components';
 import { Link, NavLink } from 'react-router-dom';
 import { DataContext } from './../contexts/DataContext'; 
 import { useStateContext } from '../contexts/ContextProvider';
+import { useSelectedItems } from '../contexts/selectedItemsContext';
 
 
 function Main() {
@@ -16,37 +17,44 @@ function Main() {
 
     const [selectedid, setselectedid] = useState(null);
 
+    const [selected, setSelected] = useState([]); //FOR SEVERAL SELECTION
+    const [selectedItem, setselectedItem] = useState([]);
+
     //search
     const [searchText, setSearchText] = useState("");
     const [searchTimeout, setSearchTimeout] = useState(null);
     const [searchedResults, setSearchedResults] = useState([]);
 
+    const {selectedItems, toggleSelection} = useSelectedItems();
     //end search
+
+    const maxSelection =5;
 
     useEffect(() => {
         getData();
     }, []);
 
-    //fetch specific sim di
-/*
-    const fetchDatabySIM = async (simValue) => {
-        try {
-            const response = await axios.get(`/api/${simValue}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            return null;
+    const toggleSelectionScript = (itemId) => {
+        if (selectedItems.includes(itemId))
+        {
+            toggleSelection(itemId);
+        } else {
+            if(selectedItems.length < maxSelection) {
+                toggleSelection(itemId)
+            } else {
+                alert('Maximum reached')
+            }
         }
+
     };
-    const simValue ='CIDT_SH_20V_20231017_821';
-    fetchDatabySIM(simValue)
-    .then((data) => {
-        if (data) {
-        console.log('Data based on SIM: ', data);
-    }})
-    .catch((error) => {console.error('Error:', error);});
-    */
-    // Function to fetch data from the database
+
+    const clearSelectedItems = () => {
+        // Clear the selected items
+        selectedItems.forEach((item) => {
+          toggleSelection(item);
+        });
+      };
+
     const getData = () => {
         axios.get('/api')
         .then((res) => {
@@ -65,23 +73,23 @@ function Main() {
     const filterPrompts = (searchtext) => {
         const regex = new RegExp(searchtext, "i"); // 'i' flag for case-insensitive search
         return datadb.filter(
-          (item) =>
+        (item) =>
             regex.test(item.SIM_ID)
         );
-      };
+    };
     
-      const handleSearchChange = (e) => {
+    const handleSearchChange = (e) => {
         clearTimeout(searchTimeout);
         setSearchText(e.target.value);
     
         // debounce method
         setSearchTimeout(
-          setTimeout(() => {
+        setTimeout(() => {
             const searchResult = filterPrompts(e.target.value);
             setSearchedResults(searchResult);
-          }, 500)
+        }, 500)
         );
-      };
+    };
     //end search
 
     return (
@@ -91,26 +99,26 @@ function Main() {
         </div>
 
         <form className='relative w-full flex  justify-center'>
-        <input
-          type='text'
-          placeholder='Search'
-          value={searchText}
-          onChange={handleSearchChange}
-          required
-          className='w-1/2 mt-8 rounded-md border border-gray-200 bg-white py-2.5 font-satoshi pl-5 pr-12 text-sm shadow-lg font-medium focus:border-black focus:outline-none focus:ring-0 peer'
-        />
-      </form>
+            <input
+            type='text'
+            placeholder='Search'
+            value={searchText}
+            onChange={handleSearchChange}
+            required
+            className='w-1/2 mt-8 rounded-md border border-gray-200 bg-white py-2.5 font-satoshi pl-5 pr-12 text-sm shadow-lg font-medium focus:border-black focus:outline-none focus:ring-0 peer'
+            />
+                    <button backgroundColor= {currentColor} className=' justify-center mt-8 rounded-md border border-gray-200 py-2.5 font-satoshi pl-5 pr-12 text-sm shadow-lg font-medium focus:border-black focus:outline-none focus:ring-0 peer' onClick={clearSelectedItems}>Clear </button>
 
+        </form>
         {searchText ? (
                     <div className='w-1/3 mt-8 '>
                     {searchedResults.map((item, index) => (
-        
                         <div 
-                        style={{backgroundColor: selectedid === item.SIM_ID ? currentColor : 'inherit', 
-                            color: selectedid === item.SIM_ID ? 'white' :'inherit',
+                        style={{backgroundColor: selectedItems.includes(item.SIM_ID) ? currentColor : 'inherit', 
+                            color:  selectedItems.includes(item.SIM_ID) ? 'white' :'inherit',
                             cursor:'pointer'}}
                             className= 'pl-4 justify-center flex pt-1 pb-1 text-l font-semibold  border-1 border-gray ' 
-                            onClick={()  => handleSelectionId(item.SIM_ID)}>
+                            onClick={() => toggleSelectionScript(item.SIM_ID)}>
                                 {item.SIM_ID}
                         </div>
                 ))}
@@ -121,14 +129,15 @@ function Main() {
             {datadb.map((item, index) => (
 
                 <div 
-                style={{backgroundColor: selectedid === item.SIM_ID ? currentColor : 'inherit', 
-                    color: selectedid === item.SIM_ID ? 'white' :'inherit',
+                style={{backgroundColor: selectedItems.includes(item.SIM_ID) ? currentColor : 'inherit', 
+                    color:  selectedItems.includes(item.SIM_ID) ? 'white' :'inherit',
                     cursor:'pointer'}}
                     className= 'pl-4 justify-center flex pt-1 pb-1 text-l font-semibold  border-1 border-gray ' 
-                    onClick={()  => handleSelectionId(item.SIM_ID)}>
+                    onClick={() => toggleSelectionScript(item.SIM_ID)}>
                         {item.SIM_ID}
                 </div>
         ))}
+
 
         </div>
 }
@@ -138,6 +147,3 @@ function Main() {
 }
 
 export default Main;
-
-/**    <button type='button' style={{backgroundColor: currentColor, color:'white'}} className='mt-8 flex  justify-center border-2 rounded-md pl-4 pr-4 '>Load</button>
- */

@@ -13,7 +13,7 @@ const Schema = mongoose.Schema //声明Schema
 var ObjectId = Schema.Types.ObjectId //声明Object类型
 
 //
-mongoose.connect('mongodb+srv://arabia:9hI55M1QTCfbjrxJ@cluster0.xleuu3g.mongodb.net/?retryWrites=true&w=majority').then(() => console.log('Connected!'));
+mongoose.connect('mongodb+srv://doadmin:02kw53Mdr7Cyn184@db-mongodb-lon1-46937-21f76e64.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=db-mongodb-lon1-46937').then(() => console.log('Connected!'));
 
 var jsonDataSchema = new mongoose.Schema({
     SIM_ID: String, 
@@ -53,8 +53,9 @@ app.post("/save",jsonParser,function (req,res){
 
 app.get('/', function (req, res) {
     JsonData.find().then(data=>{
-        console.log("000000")
+        console.log("enters get 000000")
         console.log(data)
+        console.log("enters get 000000")
         res.json(data);
     })
 
@@ -64,8 +65,9 @@ app.get('/:SIM_ID', async (req, res) => {
     const {SIM_ID} = req.params;
     try {
         JsonData.find({"SIM_ID": SIM_ID}).then(data=>{
-            console.log("000000")
+            console.log("enters simid000000")
         console.log(data)
+        console.log("enters simid000000")
         res.json(data);
         });
 
